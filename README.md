@@ -1,3 +1,5 @@
+This is a fork of CentralHDQM for adding HCAL plots. 
+
 # Table of contents
 
 - [Table of contents](#table-of-contents)
@@ -48,22 +50,22 @@ bash
 # You have to change the username. From this point, all instruction can be copy pasted without modifications.
 ssh -L 8000:localhost:8000 -L 8080:localhost:5000 <YOUR_USER_NAME>@lxplus7.cern.ch
 /bin/bash
-mkdir -p /tmp/$USER/hdqm
-cd /tmp/$USER/hdqm/
+mkdir -p ~/workspace/private/DQM/hdqm
+cd ~/workspace/private/DQM/hdqm
 
-git clone https://github.com/cms-dqm/CentralHDQM
-cd CentralHDQM/
+git clone https://github.com/cms-dqm/CentralHDQM hdqm
+cd hdqm
 
 # Get an SSO to access OMS and RR APIs. This has to be done before cmsenv script
 # First check if we are the owner of the folder where we'll be puting the cookie
 # Cookie for  Run Registry:
-cern-get-sso-cookie --cert ~/private/usercert.pem --key ~/private/userkey.pem -u https://cmsrunregistry.web.cern.ch/api/runs_filtered_ordered -o backend/api/etc/rr_sso_cookie.txt
+cern-get-sso-cookie --cert ~/private/usercert.pem --key ~/private/userkey.pem -u https://cmsoms.cern.ch -o backend/api/etc/rr_sso_cookie.txt
+# This will give us cern-get-sso-cookie -u https://cmsoms.cern.ch/agg/api/v1/runs -o backend/api/etc/oms_sso_cookie.txta CMSSW environment
 
 cd backend/
 # Need to add client secret backend/.env file - ask DQM conveners to provide it.
-nano .env
+# emacs -nw .env
 
-# This will give us cern-get-sso-cookie -u https://cmsoms.cern.ch/agg/api/v1/runs -o backend/api/etc/oms_sso_cookie.txta CMSSW environment
 source cmsenv
 
 # Add python dependencies
@@ -75,10 +77,10 @@ export PYTHONPATH="${PYTHONPATH}:$(pwd)/.python_packages/python2"
 cd extractor/
 
 # Extract few DQM histograms. Using only one process because we are on SQLite
-./hdqmextract.py -c cfg/PixelPhase1/trendPlotsPixelPhase1_tracks.ini -r 324997 324998 324999 325000 325001 325022 325057 325097 325098 325099 -j 1
+./hdqmextract.py -c cfg/HCAL/trendPlotsHcal_DIGITDCTime_RBX.ini -r 324997 324998 324999 325000 325001 325022 325057 325097 325098 325099 -j 1
 
 # Calculate HDQM values from DQM histograms stored in the DB
-./calculate.py -c cfg/PixelPhase1/trendPlotsPixelPhase1_tracks.ini -r 324997 324998 324999 325000 325001 325022 325057 325097 325098 325099 -j 1
+./calculate.py -c cfg/HCAL/trendPlotsHcal_DIGITDCTime_RBX.ini -r 324997 324998 324999 325000 325001 325022 325057 325097 325098 325099 -j 1
 
 # Get the OMS and RR data about the runs
 ./oms_extractor.py
